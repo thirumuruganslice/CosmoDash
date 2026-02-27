@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CosmoDash — Nova Ryder's Space Adventure</title>
+    <meta name="description"
+        content="A Super Mario-inspired space adventure platformer. Dash across the solar system as Nova Ryder!">
+    <link rel="stylesheet" href="index.css">
+    <!-- Retro Pixel Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="loading-content">
+            <h1 class="loading-title">COSMODASH</h1>
+            <div class="loading-bar-container">
+                <div class="loading-bar" id="loading-bar"></div>
+            </div>
+            <p class="loading-text" id="loading-text">Initializing engines...</p>
+        </div>
+    </div>
+
+    <!-- Game Canvas -->
+    <canvas id="game-canvas"></canvas>
+
+    <!-- FPS Counter (debug) -->
+    <div id="fps-counter" class="debug-ui">FPS: --</div>
+
+    <!-- Entry Point -->
+    <script type="module" src="js/engine/Game.js"></script>
+</body>
+
+</html>

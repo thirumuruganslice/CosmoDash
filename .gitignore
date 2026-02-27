@@ -1,0 +1,25 @@
+# CosmoDash .gitignore
+
+# Sample/scratch files
+sample.js
+sample.css
+sample.html
+PHASES.md
+# OS files
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# Editor files
+.vscode/
+*.swp
+*.swo
+*~
+
+# Node (if added later)
+node_modules/
+package-lock.json
+
+# Build output
+dist/
+build/
