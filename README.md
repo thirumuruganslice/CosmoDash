@@ -4,13 +4,6 @@
 
 ### _Dash Beyond the Stars_ ✨
 
-<br>
-
-![Genre](https://img.shields.io/badge/Genre-Space%20Platformer-blueviolet?style=for-the-badge)
-![Engine](https://img.shields.io/badge/Engine-Vanilla%20JS%20%2B%20Canvas-orange?style=for-the-badge)
-![Status](https://img.shields.io/badge/Status-In%20Development-brightgreen?style=for-the-badge)
-
-<br>
 
 > _The galaxy is collapsing. A massive black hole is consuming everything in its path._
 > _Only one explorer is brave enough to stop it._
