@@ -86,8 +86,64 @@ class TileChunk {
 // Entity Types
 // ─────────────────────────────────────────────
 
+// ─── Shared tile drawing helpers ────────────────────────────────────────────
+
+/**
+ * Draw one brick cell: mortar gap is the entity bg, this paints the face + bevel.
+ * bx/by = top-left pixel of the face (already 1px inside the mortar gap).
+ */
+function _drawBrick(ctx, bx, by, bw, bh) {
+    if (bh <= 0 || bw <= 0) return;
+    // Base face — cleaner, flatter shading
+    ctx.fillStyle = '#3a2655';
+    ctx.fillRect(bx, by, bw, bh);
+    // Subtle top highlight (1px)
+    ctx.fillStyle = '#4a2d6a';
+    ctx.fillRect(bx, by, bw, 1);
+    // Soft inner shadow (1px)
+    ctx.fillStyle = '#2a173f';
+    ctx.fillRect(bx, by + bh - 1, bw, 1);
+}
+
+/** 4×4 pink LED dot with soft glow halo, centred at (cx, cy). */
+function _drawLED(ctx, cx, cy) {
+    ctx.fillStyle = 'rgba(232,76,163,0.14)';
+    ctx.fillRect(cx - 2, cy - 2, 8, 8);
+    ctx.fillStyle = '#e84ca3';
+    ctx.fillRect(cx, cy, 3, 3);
+    ctx.fillStyle = '#ffc1e4';
+    ctx.fillRect(cx + 1, cy + 1, 1, 1);
+}
+
+/**
+ * 4-layer gold/amber cap strip drawn at y=top of an entity.
+ * Width w, tile-column divider ticks every TW px.
+ */
+function _drawGoldCap(ctx, x, y, w) {
+    const TW = 32;
+    // Layer stack bottom→top
+    ctx.fillStyle = '#7a3f06';
+    ctx.fillRect(x, y + 3, w, 1);
+    ctx.fillStyle = '#c8840c';
+    ctx.fillRect(x, y + 2, w, 1);
+    ctx.fillStyle = '#f0b82b';
+    ctx.fillRect(x, y + 1, w, 1);
+    ctx.fillStyle = '#ffd65a';
+    ctx.fillRect(x, y, w, 1);
+    // Column divider ticks into the cap
+    ctx.fillStyle = '#522705';
+    for (let col = TW; col < w; col += TW) {
+        ctx.fillRect(x + col, y, 1, 3);
+    }
+    // Bright accent notch at the left of every tile column
+    ctx.fillStyle = '#fff0a6';
+    for (let col = 0; col < w; col += TW) {
+        ctx.fillRect(x + col + 3, y, 3, 1);
+    }
+}
+
 export class PlatformEntity extends Entity {
-    constructor(x, y, width, height = 16) {
+    constructor(x, y, width, height = 18) {
         super(x, y, width, height);
         this.tag = 'platform';
         this.isStatic = true;
@@ -96,11 +152,37 @@ export class PlatformEntity extends Entity {
 
     render(ctx) {
         if (!this.isActive) return;
-        ctx.fillStyle = COLORS.TILE_PLATFORM;
-        ctx.fillRect(this.x, this.y, this.width, this.height);
-        // Top highlight
-        ctx.fillStyle = '#7a7aaa';
-        ctx.fillRect(this.x, this.y, this.width, 2);
+        const { x, y, width: w, height: h } = this;
+        const TW = 32, TH = 32;
+        const CAP = 4;
+
+        // Mortar base (same col as ground)
+        ctx.fillStyle = '#1b1232';
+        ctx.fillRect(x, y + CAP, w, h - CAP);
+
+        // Brick grid (same as ground, just narrower height)
+        for (let row = 0; row < h - CAP; row += TH) {
+            for (let col = 0; col < w; col += TW) {
+                const bx = x + col + 1;
+                const by = y + CAP + row + 1;
+                const bw = TW - 2;
+                const bh2 = Math.min(TH - 2, (y + h) - by - 1);
+                _drawBrick(ctx, bx, by, bw, bh2);
+            }
+        }
+
+        // LED dot per brick cell
+        for (let row = 0; row < h - CAP; row += TH) {
+            for (let col = 0; col < w; col += TW) {
+                const ledX = x + col + Math.floor(TW / 2) - 2;
+                const ledY = y + CAP + row + Math.floor(Math.min(h - CAP, TH) / 2) - 2;
+                if (ledY + 4 > y + h - 1) continue;
+                _drawLED(ctx, ledX, ledY);
+            }
+        }
+
+        // Gold cap — identical to ground
+        _drawGoldCap(ctx, x, y, w);
     }
 }
 
@@ -114,11 +196,37 @@ export class GroundEntity extends Entity {
 
     render(ctx) {
         if (!this.isActive) return;
-        ctx.fillStyle = COLORS.TILE_GROUND;
-        ctx.fillRect(this.x, this.y, this.width, this.height);
-        // Surface line
-        ctx.fillStyle = '#4a4a7a';
-        ctx.fillRect(this.x, this.y, this.width, 2);
+        const { x, y, width: w, height: h } = this;
+        const TW = 32, TH = 32;
+        const CAP = 4; // gold cap height in pixels
+
+        // ── Mortar base (visible as grid gaps between bricks) ────────────────
+        ctx.fillStyle = '#1b1232';
+        ctx.fillRect(x, y + CAP, w, h - CAP);
+
+        // ── Brick grid ────────────────────────────────────────────────────────
+        for (let row = 0; row < h - CAP; row += TH) {
+            for (let col = 0; col < w; col += TW) {
+                const bx = x + col + 1;
+                const by = y + CAP + row + 1;
+                const bw = TW - 2;
+                const bh2 = Math.min(TH - 2, (y + h) - by - 1);
+                _drawBrick(ctx, bx, by, bw, bh2);
+            }
+        }
+
+        // ── LED dot per brick ─────────────────────────────────────────────────
+        for (let row = 0; row < h - CAP; row += TH) {
+            for (let col = 0; col < w; col += TW) {
+                const ledX = x + col + Math.floor(TW / 2) - 2;
+                const ledY = y + CAP + row + Math.floor(TH / 2) - 2;
+                if (ledY + 4 > y + h - 2) continue;
+                _drawLED(ctx, ledX, ledY);
+            }
+        }
+
+        // ── Gold surface cap ──────────────────────────────────────────────────
+        _drawGoldCap(ctx, x, y, w);
     }
 }
 
@@ -135,10 +243,37 @@ export class GroundStepEntity extends Entity {
 
     render(ctx) {
         if (!this.isActive) return;
-        ctx.fillStyle = COLORS.TILE_GROUND;
-        ctx.fillRect(this.x, this.y, this.width, this.height);
-        ctx.fillStyle = '#5a5a8a';
-        ctx.fillRect(this.x, this.y, this.width, 2);
+        const { x, y, width: w, height: h } = this;
+        const TW = 32, TH = 32;
+        const CAP = 4;
+
+        // Mortar base
+        ctx.fillStyle = '#1b1232';
+        ctx.fillRect(x, y + CAP, w, h - CAP);
+
+        // Brick grid
+        for (let row = 0; row < h - CAP; row += TH) {
+            for (let col = 0; col < w; col += TW) {
+                const bx = x + col + 1;
+                const by = y + CAP + row + 1;
+                const bw = TW - 2;
+                const bh2 = Math.min(TH - 2, (y + h) - by - 1);
+                _drawBrick(ctx, bx, by, bw, bh2);
+            }
+        }
+
+        // LED dots
+        for (let row = 0; row < h - CAP; row += TH) {
+            for (let col = 0; col < w; col += TW) {
+                const ledX = x + col + Math.floor(TW / 2) - 2;
+                const ledY = y + CAP + row + Math.floor(TH / 2) - 2;
+                if (ledY + 4 > y + h - 2) continue;
+                _drawLED(ctx, ledX, ledY);
+            }
+        }
+
+        // Gold cap
+        _drawGoldCap(ctx, x, y, w);
     }
 }
 
