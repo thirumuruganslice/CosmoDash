@@ -3,15 +3,21 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CosmoDash — Nova Ryder's Space Adventure</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>CosmoDash — Nova Ryder's Cosmic Dash</title>
     <meta name="description"
-        content="A Super Mario-inspired space adventure platformer. Dash across the solar system as Nova Ryder!">
-    <link rel="stylesheet" href="index.css">
+        content="A cosmic endless runner. Dash across the solar system as Nova Ryder — jump, dash and survive!">
+
+    <!-- Open Graph (for social sharing) -->
+    <meta property="og:title" content="CosmoDash">
+    <meta property="og:description" content="A cosmic endless runner built from scratch with vanilla JS + Canvas.">
+    <meta property="og:type" content="website">
+
     <!-- Retro Pixel Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
 </head>
 
 <body>
@@ -19,6 +25,7 @@
     <div id="loading-screen">
         <div class="loading-content">
             <h1 class="loading-title">COSMODASH</h1>
+            <p class="loading-subtitle">Nova Ryder's Cosmic Dash</p>
             <div class="loading-bar-container">
                 <div class="loading-bar" id="loading-bar"></div>
             </div>
