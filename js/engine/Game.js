@@ -837,7 +837,7 @@ class Game {
         this.input.update();
 
         // Update space background animation
-        this.spaceBG.update();
+        this.spaceBG.update(dt);
 
         this._accumulator += dt;
         while (this._accumulator >= GAME.FIXED_TIMESTEP) {
